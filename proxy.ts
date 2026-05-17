@@ -5,47 +5,46 @@ import { checkSessionServer } from "./lib/api/serverApi";
 const privateRoutes = ["/profile", "/notes"];
 const authRoutes = ["/sign-in", "/sign-up"];
 
-// 1. Робимо функцію async
 export async function proxy(request: NextRequest) {
   let accessToken = request.cookies.get("accessToken")?.value;
   const refreshToken = request.cookies.get("refreshToken")?.value;
   const path = request.nextUrl.pathname;
 
-  const response = NextResponse.next();
+  let setCookieHeaders: string[] | string | undefined;
 
-  // 2. Логіка поновлення сесії (Refresh Token)
+  // 1. Якщо треба, оновлюємо сесію і зберігаємо нові кукі в змінну
   if (!accessToken && refreshToken) {
     try {
       const apiResponse = await checkSessionServer();
-
-      // Якщо сервер видав нові кукі — записуємо їх у нашу відповідь
-      const setCookieHeaders = apiResponse.headers["set-cookie"];
-      if (setCookieHeaders) {
-        if (Array.isArray(setCookieHeaders)) {
-          setCookieHeaders.forEach((cookie) =>
-            response.headers.append("Set-Cookie", cookie),
-          );
-        } else {
-          response.headers.append("Set-Cookie", setCookieHeaders as string);
-        }
-      }
-      // Ставимо заглушку, щоб пропустити юзера далі
-      accessToken = "refreshed";
+      setCookieHeaders = apiResponse.headers["set-cookie"];
+      accessToken = "refreshed"; // Позначаємо, що тепер юзер авторизований
     } catch (error) {
-      accessToken = undefined; // Якщо рефреш не вдався (наприклад, токен протух)
+      accessToken = undefined;
     }
   }
 
   const isPrivateRoute = privateRoutes.some((route) => path.startsWith(route));
   const isAuthRoute = authRoutes.some((route) => path.startsWith(route));
 
+  // 2. Визначаємо базову відповідь (пропустити далі)
+  let response = NextResponse.next();
+
+  // 3. Перевіряємо, чи потрібен редірект
   if (isPrivateRoute && !accessToken) {
-    return NextResponse.redirect(new URL("/sign-in", request.url));
+    response = NextResponse.redirect(new URL("/sign-in", request.url));
+  } else if (isAuthRoute && accessToken) {
+    response = NextResponse.redirect(new URL("/", request.url));
   }
 
-  if (isAuthRoute && accessToken) {
-    // 3. Змінили перенаправлення на домашню сторінку "/"
-    return NextResponse.redirect(new URL("/", request.url));
+  // 4. Якщо ми отримали нові кукі під час рефрешу, ОБОВ'ЯЗКОВО додаємо їх у фінальну відповідь
+  if (setCookieHeaders) {
+    if (Array.isArray(setCookieHeaders)) {
+      setCookieHeaders.forEach((cookie) =>
+        response.headers.append("Set-Cookie", cookie),
+      );
+    } else {
+      response.headers.append("Set-Cookie", setCookieHeaders as string);
+    }
   }
 
   return response;
