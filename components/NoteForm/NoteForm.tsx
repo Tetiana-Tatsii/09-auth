@@ -14,10 +14,9 @@ export default function NoteForm() {
   const mutation = useMutation({
     mutationFn: createNote,
     onSuccess: () => {
-      // Оновлюємо кеш після створення
       queryClient.invalidateQueries({ queryKey: ["notes"] });
       clearDraftNote();
-      router.back(); // Повертаємося на попередню сторінку
+      router.back();
     },
   });
 
@@ -56,14 +55,23 @@ export default function NoteForm() {
         required
         style={{ padding: "8px", minHeight: "100px" }}
       />
-      <input
-        type="text"
-        placeholder="Tag"
+
+      {/* ЗМІНЕНО: Select замість звичайного текстового поля */}
+      <select
         value={draftNote.tag}
         onChange={(e) => setDraftNote({ tag: e.target.value })}
         required
         style={{ padding: "8px" }}
-      />
+      >
+        <option value="" disabled>
+          Оберіть тег...
+        </option>
+        <option value="Todo">Todo</option>
+        <option value="Work">Work</option>
+        <option value="Personal">Personal</option>
+        <option value="Meeting">Meeting</option>
+        <option value="Shopping">Shopping</option>
+      </select>
 
       <div style={{ display: "flex", gap: "8px" }}>
         <button

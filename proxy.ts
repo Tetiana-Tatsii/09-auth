@@ -1,28 +1,52 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { checkSessionServer } from "./lib/api/serverApi";
 
-// Визначаємо масиви маршрутів
 const privateRoutes = ["/profile", "/notes"];
 const authRoutes = ["/sign-in", "/sign-up"];
 
-export function proxy(request: NextRequest) {
-  // Дістаємо токен доступу з cookies
-  const accessToken = request.cookies.get("accessToken")?.value;
+// 1. Робимо функцію async
+export async function proxy(request: NextRequest) {
+  let accessToken = request.cookies.get("accessToken")?.value;
+  const refreshToken = request.cookies.get("refreshToken")?.value;
   const path = request.nextUrl.pathname;
+
+  const response = NextResponse.next();
+
+  // 2. Логіка поновлення сесії (Refresh Token)
+  if (!accessToken && refreshToken) {
+    try {
+      const apiResponse = await checkSessionServer();
+
+      // Якщо сервер видав нові кукі — записуємо їх у нашу відповідь
+      const setCookieHeaders = apiResponse.headers["set-cookie"];
+      if (setCookieHeaders) {
+        if (Array.isArray(setCookieHeaders)) {
+          setCookieHeaders.forEach((cookie) =>
+            response.headers.append("Set-Cookie", cookie),
+          );
+        } else {
+          response.headers.append("Set-Cookie", setCookieHeaders as string);
+        }
+      }
+      // Ставимо заглушку, щоб пропустити юзера далі
+      accessToken = "refreshed";
+    } catch (error) {
+      accessToken = undefined; // Якщо рефреш не вдався (наприклад, токен протух)
+    }
+  }
 
   const isPrivateRoute = privateRoutes.some((route) => path.startsWith(route));
   const isAuthRoute = authRoutes.some((route) => path.startsWith(route));
 
-  // Якщо маршрут приватний, а токена немає -> кидаємо на логін
   if (isPrivateRoute && !accessToken) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
-  // Якщо маршрут публічний (автентифікація), а токен є -> кидаємо в профіль
   if (isAuthRoute && accessToken) {
-    return NextResponse.redirect(new URL("/profile", request.url));
+    // 3. Змінили перенаправлення на домашню сторінку "/"
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // Усі інші запити пропускаємо
-  return NextResponse.next();
+  return response;
 }

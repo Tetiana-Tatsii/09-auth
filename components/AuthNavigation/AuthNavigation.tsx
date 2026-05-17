@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { useAuthStore } from "@/lib/store/authStore";
 import { logout } from "@/lib/api/clientApi";
-import { useRouter } from "next/navigation"; // Імпортуємо useRouter
+import { useRouter } from "next/navigation";
 import css from "./AuthNavigation.module.css";
 
 export default function AuthNavigation() {
   const { user, clearIsAuthenticated } = useAuthStore();
-  const router = useRouter(); // Ініціалізуємо роутер
+  const router = useRouter();
 
   const handleLogout = async () => {
     try {
@@ -17,13 +17,17 @@ export default function AuthNavigation() {
       console.error("Failed to logout on server", err);
     } finally {
       clearIsAuthenticated();
-      router.push("/sign-in"); // Клієнтський перехід без жорсткого перезавантаження
+      router.push("/sign-in");
     }
   };
 
   if (user) {
     return (
-      <div className={css.navigationItem}>
+      <div className={css.navigationItem} style={{ gap: "16px" }}>
+        {/* ДОДАНО: Посилання на профіль! */}
+        <Link href="/profile" className={css.navigationLink}>
+          Profile
+        </Link>
         <span className={css.userEmail}>{user.email}</span>
         <button onClick={handleLogout} className={css.logoutButton}>
           Logout
