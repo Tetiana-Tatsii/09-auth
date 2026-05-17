@@ -1,12 +1,11 @@
 import { api } from "./api";
 import { User } from "../../types/user";
+import { Note } from "../../types/note"; // Використовуємо створений нами тип Note
 
-// Інтерфейс для відповіді від сервера при реєстрації/логіні
 interface AuthResponse {
   user: User;
 }
 
-// Функція для реєстрації
 export const register = async (
   email: string,
   password: string,
@@ -18,7 +17,6 @@ export const register = async (
   return response.data.user;
 };
 
-// Функція для логіну
 export const login = async (email: string, password: string): Promise<User> => {
   const response = await api.post<AuthResponse>("/auth/login", {
     email,
@@ -27,26 +25,55 @@ export const login = async (email: string, password: string): Promise<User> => {
   return response.data.user;
 };
 
-// Функція для виходу з акаунту
 export const logout = async (): Promise<void> => {
   await api.post("/auth/logout");
 };
 
-// Функція для перевірки активної сесії
+// Явно вказуємо тип User, як просив бот
 export const checkSession = async (): Promise<User> => {
-  const response = await api.get("/auth/session");
-  // Якщо сесія активна, бекенд повертає об'єкт користувача
+  const response = await api.get<User>("/auth/session");
   return response.data;
 };
 
-// Інтерфейс для даних, які ми відправляємо на сервер
+// Залишаємо тільки username
 interface UpdateProfileData {
   username: string;
-  avatar: string;
 }
 
-// Функція для оновлення профілю
 export const updateProfile = async (data: UpdateProfileData): Promise<User> => {
   const response = await api.patch<User>("/users/me", data);
+  return response.data;
+};
+
+// --- ФУНКЦІЇ ДЛЯ НОТАТОК ---
+
+export const fetchNotes = async (
+  params: {
+    search?: string;
+    page?: number;
+    perPage?: number;
+    tag?: string;
+  } = {},
+): Promise<Note[]> => {
+  const response = await api.get<Note[]>("/notes", { params });
+  return response.data;
+};
+
+export const fetchNoteById = async (id: string): Promise<Note> => {
+  const response = await api.get<Note>(`/notes/${id}`);
+  return response.data;
+};
+
+export const createNote = async (data: {
+  title: string;
+  content: string;
+  tag: string;
+}): Promise<Note> => {
+  const response = await api.post<Note>("/notes", data);
+  return response.data;
+};
+
+export const deleteNote = async (id: string): Promise<Note> => {
+  const response = await api.delete<Note>(`/notes/${id}`);
   return response.data;
 };

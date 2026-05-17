@@ -2,21 +2,22 @@
 
 import Link from "next/link";
 import { useAuthStore } from "@/lib/store/authStore";
-import { logout } from "@/lib/api/clientApi"; // Імпортуємо функцію виходу з API
+import { logout } from "@/lib/api/clientApi";
+import { useRouter } from "next/navigation"; // Імпортуємо useRouter
 import css from "./AuthNavigation.module.css";
 
 export default function AuthNavigation() {
-  // Дістаємо clearIsAuthenticated замість setUser
   const { user, clearIsAuthenticated } = useAuthStore();
+  const router = useRouter(); // Ініціалізуємо роутер
 
   const handleLogout = async () => {
     try {
-      await logout(); // 1. Кажемо бекенду видалити куки/токени
+      await logout();
     } catch (err) {
       console.error("Failed to logout on server", err);
     } finally {
-      clearIsAuthenticated(); // 2. Очищаємо Zustand у будь-якому випадку
-      window.location.href = "/"; // 3. Жорстко перенаправляємо на головну сторінку
+      clearIsAuthenticated();
+      router.push("/sign-in"); // Клієнтський перехід без жорсткого перезавантаження
     }
   };
 

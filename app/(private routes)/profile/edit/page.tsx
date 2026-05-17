@@ -1,19 +1,16 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import axios from "axios";
 import { useAuthStore } from "@/lib/store/authStore";
 import { updateProfile } from "@/lib/api/clientApi";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { useMutation } from "@tanstack/react-query";
+// Якщо в тебе тут був імпорт CSS (наприклад, import css from './...'),
+// можеш додати його і змінити style={} на className={css...}
 
-// Переконайся, що назва файлу зі стилями відповідає твоїй!
-import css from "./EditProfilePage.module.css";
-
-export default function ProfileEditPage() {
+export default function EditProfilePage() {
   const router = useRouter();
   const { user, setUser } = useAuthStore();
-  const [error, setError] = useState<string | null>(null);
 
   const mutation = useMutation({
     mutationFn: updateProfile,
@@ -21,81 +18,128 @@ export default function ProfileEditPage() {
       setUser(updatedUser);
       router.push("/profile");
     },
-    onError: (err) => {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Failed to update profile.");
-      } else {
-        setError("An unexpected error occurred.");
-      }
-    },
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
-
     const formData = new FormData(e.currentTarget);
     const username = formData.get("username") as string;
-    const avatar = formData.get("avatar") as string;
 
-    mutation.mutate({ username, avatar });
+    // ВАЖЛИВО: Відправляємо тільки username, бо avatar не підтримується API
+    mutation.mutate({ username });
   };
 
+  const avatarSrc =
+    user?.avatar ||
+    "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg";
+
   return (
-    <main className={css.mainContent}>
-      {/* Використовуємо profileCard як обгортку для форми */}
-      <form className={css.profileCard} onSubmit={handleSubmit}>
-        <h1 className={css.formTitle}>Edit Profile</h1>
+    <main
+      style={{ padding: "32px", display: "flex", justifyContent: "center" }}
+    >
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          maxWidth: "500px",
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          gap: "16px",
+          backgroundColor: "#fff",
+          padding: "24px",
+          borderRadius: "12px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+        }}
+      >
+        <h1 style={{ fontSize: "24px", marginBottom: "16px" }}>Edit Profile</h1>
 
-        {/* Обгортка для полів */}
-        <div className={css.profileInfo}>
-          <div className={css.usernameWrapper}>
-            <label htmlFor="username">Username</label>
-            <input
-              id="username"
-              type="text"
-              name="username"
-              defaultValue={user?.username || ""}
-              className={css.input}
-              required
-            />
-          </div>
-
-          <div className={css.usernameWrapper}>
-            <label htmlFor="avatar">Avatar URL</label>
-            <input
-              id="avatar"
-              type="url"
-              name="avatar"
-              defaultValue={user?.avatar || ""}
-              className={css.input}
-              required
-            />
-          </div>
+        {/* 1. Відображаємо аватар через компонент Image (вимога бота) */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "16px",
+          }}
+        >
+          <Image
+            src={avatarSrc}
+            alt="User Avatar"
+            width={120}
+            height={120}
+            style={{ borderRadius: "50%", objectFit: "cover" }}
+            priority
+          />
         </div>
 
-        {error && (
-          <p style={{ color: "#e00000", marginTop: "12px", fontSize: "14px" }}>
-            {error}
-          </p>
-        )}
+        {/* 2. Поле Email лише для читання (вимога бота) */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+          <label style={{ fontSize: "14px", fontWeight: 500 }}>
+            Email (Read-only)
+          </label>
+          <input
+            type="email"
+            defaultValue={user?.email || ""}
+            readOnly
+            disabled
+            style={{
+              padding: "8px 12px",
+              border: "1px solid #ced4da",
+              borderRadius: "4px",
+              backgroundColor: "#e9ecef",
+              cursor: "not-allowed",
+            }}
+          />
+        </div>
 
-        {/* Блок з кнопками Save та Cancel */}
-        <div className={css.actions}>
-          <button
-            type="submit"
-            className={css.saveButton}
-            disabled={mutation.isPending}
-          >
-            {mutation.isPending ? "Saving..." : "Save"}
-          </button>
+        {/* 3. Поле Username для редагування */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+          <label style={{ fontSize: "14px", fontWeight: 500 }}>Username</label>
+          <input
+            type="text"
+            name="username"
+            defaultValue={user?.username || ""}
+            style={{
+              padding: "8px 12px",
+              border: "1px solid #ced4da",
+              borderRadius: "4px",
+            }}
+          />
+        </div>
 
+        <div
+          style={{
+            display: "flex",
+            gap: "8px",
+            justifyContent: "flex-end",
+            marginTop: "16px",
+          }}
+        >
           <button
             type="button"
-            className={css.cancelButton}
             onClick={() => router.push("/profile")}
+            style={{
+              padding: "8px 16px",
+              borderRadius: "4px",
+              border: "1px solid #ced4da",
+              backgroundColor: "#fff",
+              cursor: "pointer",
+            }}
           >
             Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={mutation.isPending}
+            style={{
+              padding: "8px 16px",
+              borderRadius: "4px",
+              border: "none",
+              backgroundColor: "#0d6efd",
+              color: "#fff",
+              cursor: mutation.isPending ? "not-allowed" : "pointer",
+            }}
+          >
+            {mutation.isPending ? "Saving..." : "Save"}
           </button>
         </div>
       </form>

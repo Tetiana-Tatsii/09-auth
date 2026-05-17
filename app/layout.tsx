@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css"; // Переконайся, що імпорт стилів на місці
-import TanStackProvider from "@/components/TanStackProvider/TanStackProvider";
+import "./globals.css";
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
-import AuthNavigation from "@/components/AuthNavigation/AuthNavigation";
+import TanStackProvider from "@/components/TanStackProvider/TanStackProvider";
+import Header from "@/components/Header/Header";
+import Footer from "@/components/Footer/Footer"; // Імпортуємо Footer
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,34 +23,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  modal, // 1. Обов'язково додаємо modal сюди для паралельного маршруту!
+  modal, // Додали підтримку модалок
 }: Readonly<{
   children: React.ReactNode;
-  modal: React.ReactNode; // 2. Типізуємо modal
+  modal: React.ReactNode;
 }>) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <TanStackProvider>
           <AuthProvider>
-            {/* Наш сірий Хедер із навігацією */}
-            <header
-              style={{
-                padding: "20px",
-                background: "#1a1a1a",
-                borderBottom: "1px solid #333",
-              }}
-            >
-              <nav>
-                <AuthNavigation />
-              </nav>
-            </header>
-
-            {/* Тут будуть відображатися всі сторінки (page.tsx) */}
-            {children}
-
-            {/* Тут будуть відображатися модальні вікна з папки @modal */}
+            <Header />
+            <main style={{ minHeight: "calc(100vh - 120px)" }}>{children}</main>
             {modal}
+            <Footer /> {/* Додаємо Footer сюди! */}
           </AuthProvider>
         </TanStackProvider>
       </body>

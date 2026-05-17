@@ -1,12 +1,19 @@
-"use client";
-
-import { useAuthStore } from "@/lib/store/authStore";
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { getMeServer } from "@/lib/api/serverApi";
 import css from "./ProfilePage.module.css";
 
-export default function ProfilePage() {
-  const { user } = useAuthStore();
+// 1. Додаємо метадані
+export const metadata: Metadata = {
+  title: "Profile | NoteHub",
+  description: "User profile details",
+};
+
+// 2. Робимо функцію асинхронною (Серверний компонент)
+export default async function ProfilePage() {
+  // 3. Отримуємо дані користувача через серверне API
+  const user = await getMeServer();
   const avatarSrc =
     user?.avatar ||
     "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg";
@@ -14,7 +21,6 @@ export default function ProfilePage() {
   return (
     <main className={css.mainContent}>
       <div className={css.profileCard}>
-        {/* Шапка картки з кнопкою */}
         <div className={css.header}>
           <h1 className={css.formTitle}>Profile Page</h1>
           <Link href="/profile/edit" className={css.editProfileButton}>
@@ -22,7 +28,6 @@ export default function ProfilePage() {
           </Link>
         </div>
 
-        {/* Аватар */}
         <div className={css.avatarWrapper}>
           <Image
             src={avatarSrc}
@@ -34,14 +39,15 @@ export default function ProfilePage() {
           />
         </div>
 
-        {/* Інформація користувача */}
         <div className={css.profileInfo}>
           <div className={css.usernameWrapper}>
-            <label>Username</label>
+            <label style={{ fontSize: "14px", fontWeight: 500 }}>
+              Username
+            </label>
             <p>{user?.username || "Not set"}</p>
           </div>
           <div className={css.usernameWrapper}>
-            <label>Email</label>
+            <label style={{ fontSize: "14px", fontWeight: 500 }}>Email</label>
             <p>{user?.email || "Loading..."}</p>
           </div>
         </div>

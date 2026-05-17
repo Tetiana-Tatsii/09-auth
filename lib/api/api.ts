@@ -1,8 +1,9 @@
 import axios from "axios";
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL;
+// Додаємо /api наприкінці, як і вимагає бот для проксі
+const baseURL = process.env.NEXT_PUBLIC_API_URL + "/api";
 
 export const api = axios.create({
   baseURL,
-  withCredentials: true, // Це дозволить передавати cookie з токенами
+  withCredentials: true,
 });
