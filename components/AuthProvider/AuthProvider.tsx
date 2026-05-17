@@ -26,19 +26,15 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       );
 
       try {
-        // Запитуємо бекенд, чи дійсний наш токен
         const user = await checkSession();
         setUser(user);
 
-        // Якщо ми авторизовані і випадково зайшли на логін/реєстрацію -> кидаємо в профіль
         if (isPublicRoute) {
           router.push("/profile");
         }
       } catch {
-        // Якщо токена немає або він згорів
         clearIsAuthenticated();
 
-        // І якщо ми ліземо в приватну зону -> викидаємо на логін
         if (isPrivateRoute) {
           router.push("/sign-in");
         }
@@ -54,7 +50,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     pathname.startsWith(route),
   );
 
-  // Показуємо лоадер, поки чекаємо відповіді від бекенда для приватних маршрутів
   if (isChecking && isPrivateRoute) {
     return (
       <div

@@ -2,7 +2,6 @@
 
 import React from "react";
 
-// Тут ми ЯВНО кажемо TypeScript: "Цей компонент приймає children"
 export default function Modal({ children }: { children: React.ReactNode }) {
   return (
     <div

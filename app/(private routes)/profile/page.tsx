@@ -4,15 +4,12 @@ import Link from "next/link";
 import { getMeServer } from "@/lib/api/serverApi";
 import css from "./ProfilePage.module.css";
 
-// 1. Додаємо метадані
 export const metadata: Metadata = {
   title: "Profile | NoteHub",
   description: "User profile details",
 };
 
-// 2. Робимо функцію асинхронною (Серверний компонент)
 export default async function ProfilePage() {
-  // 3. Отримуємо дані користувача через серверне API
   const user = await getMeServer();
   const avatarSrc =
     user?.avatar ||

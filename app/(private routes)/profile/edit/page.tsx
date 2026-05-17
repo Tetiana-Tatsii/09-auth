@@ -5,8 +5,6 @@ import { updateProfile } from "@/lib/api/clientApi";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useMutation } from "@tanstack/react-query";
-// Якщо в тебе тут був імпорт CSS (наприклад, import css from './...'),
-// можеш додати його і змінити style={} на className={css...}
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -25,7 +23,6 @@ export default function EditProfilePage() {
     const formData = new FormData(e.currentTarget);
     const username = formData.get("username") as string;
 
-    // ВАЖЛИВО: Відправляємо тільки username, бо avatar не підтримується API
     mutation.mutate({ username });
   };
 
@@ -53,7 +50,6 @@ export default function EditProfilePage() {
       >
         <h1 style={{ fontSize: "24px", marginBottom: "16px" }}>Edit Profile</h1>
 
-        {/* 1. Відображаємо аватар через компонент Image (вимога бота) */}
         <div
           style={{
             display: "flex",
@@ -71,7 +67,6 @@ export default function EditProfilePage() {
           />
         </div>
 
-        {/* 2. Поле Email лише для читання (вимога бота) */}
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
           <label style={{ fontSize: "14px", fontWeight: 500 }}>
             Email (Read-only)
@@ -91,7 +86,6 @@ export default function EditProfilePage() {
           />
         </div>
 
-        {/* 3. Поле Username для редагування */}
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
           <label style={{ fontSize: "14px", fontWeight: 500 }}>Username</label>
           <input

@@ -56,7 +56,6 @@ export default function NoteForm() {
         style={{ padding: "8px", minHeight: "100px" }}
       />
 
-      {/* ЗМІНЕНО: Select замість звичайного текстового поля */}
       <select
         value={draftNote.tag}
         onChange={(e) => setDraftNote({ tag: e.target.value })}

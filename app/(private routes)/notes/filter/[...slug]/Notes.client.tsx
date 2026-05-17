@@ -8,7 +8,6 @@ import NoteList from "@/components/NoteList/NoteList";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
 
-// ВАЖЛИВО: Явно прописали тип { initialTag?: string } прямо тут!
 export default function NotesClient({
   initialTag = "",
 }: {

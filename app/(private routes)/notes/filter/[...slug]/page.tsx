@@ -1,6 +1,5 @@
 import NotesClient from "./Notes.client";
 
-// Типізуємо params як Promise, як того вимагає новий Next.js
 export default async function FilterSlugPage({
   params,
 }: {
@@ -8,7 +7,6 @@ export default async function FilterSlugPage({
 }) {
   const resolvedParams = await params;
 
-  // Якщо URL виглядає як /notes/filter/react, то тег буде "react"
   const tag =
     resolvedParams.slug && resolvedParams.slug.length > 0
       ? resolvedParams.slug[0]

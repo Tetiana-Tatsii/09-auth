@@ -2,7 +2,6 @@
 
 import React from "react";
 
-// Явно вказуємо типи прямо в дужках!
 export default function SearchBox({
   value,
   onChange,

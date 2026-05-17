@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { AxiosResponse } from "axios"; // Додали імпорт
+import { AxiosResponse } from "axios";
 import { api } from "./api";
 import { User } from "../../types/user";
 import { Note } from "../../types/note";
@@ -7,7 +7,7 @@ import { Note } from "../../types/note";
 const getHeadersWithCookies = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken")?.value;
-  const refresh = cookieStore.get("refreshToken")?.value; // Додали refreshToken
+  const refresh = cookieStore.get("refreshToken")?.value;
 
   let cookieString = "";
   if (token) cookieString += `accessToken=${token}; `;
@@ -24,10 +24,9 @@ export const getMeServer = async (): Promise<User> => {
   return response.data;
 };
 
-// ЗМІНЕНО: Тепер повертає Promise<AxiosResponse<User>>, як просив бот
 export const checkSessionServer = async (): Promise<AxiosResponse<User>> => {
   const headers = await getHeadersWithCookies();
-  // Повертаємо ПОВНУ відповідь
+
   const response = await api.get<User>("/auth/session", { headers });
   return response;
 };

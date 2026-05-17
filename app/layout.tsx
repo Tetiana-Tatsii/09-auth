@@ -4,7 +4,7 @@ import "./globals.css";
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
 import TanStackProvider from "@/components/TanStackProvider/TanStackProvider";
 import Header from "@/components/Header/Header";
-import Footer from "@/components/Footer/Footer"; // Імпортуємо Footer
+import Footer from "@/components/Footer/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  modal, // Додали підтримку модалок
+  modal,
 }: Readonly<{
   children: React.ReactNode;
   modal: React.ReactNode;
@@ -36,7 +36,7 @@ export default function RootLayout({
             <Header />
             <main style={{ minHeight: "calc(100vh - 120px)" }}>{children}</main>
             {modal}
-            <Footer /> {/* Додаємо Footer сюди! */}
+            <Footer />
           </AuthProvider>
         </TanStackProvider>
       </body>

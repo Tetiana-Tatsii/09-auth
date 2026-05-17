@@ -11,7 +11,6 @@ export default function AuthLayout({
   const router = useRouter();
 
   useEffect(() => {
-    // Оновлюємо роутер при монтуванні, як просив бот
     router.refresh();
   }, [router]);
 

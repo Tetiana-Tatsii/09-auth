@@ -21,13 +21,10 @@ export default function SignUpPage() {
     const password = formData.get("password") as string;
 
     try {
-      // 1. Створюємо акаунт на сервері GoIT
       await register(email, password);
 
-      // 2. Одразу автоматично логінимося, щоб отримати куку з токеном
       const user = await login(email, password);
 
-      // 3. Зберігаємо дані в Zustand та йдемо в профіль
       setUser(user);
       router.push("/profile");
     } catch (err) {

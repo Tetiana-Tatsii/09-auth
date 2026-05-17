@@ -6,7 +6,6 @@ import {
 import { getNoteByIdServer } from "@/lib/api/serverApi";
 import NoteDetailsClient from "./NoteDetails.client";
 
-// Бот вимагав типізацію params як Promise<{ id: string }>
 export default async function NoteIdPage({
   params,
 }: {
@@ -17,7 +16,6 @@ export default async function NoteIdPage({
 
   const queryClient = new QueryClient();
 
-  // Префетчинг даних на сервері (вимога бота)
   await queryClient.prefetchQuery({
     queryKey: ["note", id],
     queryFn: () => getNoteByIdServer(id),

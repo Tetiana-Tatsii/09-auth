@@ -16,13 +16,12 @@ export default function NoteList({ notes }: NoteListProps) {
   const deleteMutation = useMutation({
     mutationFn: deleteNote,
     onSuccess: () => {
-      // Скидаємо кеш, щоб список автоматично оновився
       queryClient.invalidateQueries({ queryKey: ["notes"] });
     },
   });
 
   const handleDelete = (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
-    e.preventDefault(); // Запобігаємо переходу по Link при кліку на кнопку
+    e.preventDefault();
     deleteMutation.mutate(id);
   };
 

@@ -11,7 +11,6 @@ export default function SignInPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
-  // 1. Дістаємо функцію збереження з нашого стору
   const { setUser } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -23,13 +22,10 @@ export default function SignInPage() {
     const password = formData.get("password") as string;
 
     try {
-      // 2. Отримуємо дані користувача з сервера
       const user = await login(email, password);
 
-      // 3. Зберігаємо користувача в глобальний стан
       setUser(user);
 
-      // 4. Перенаправляємо на профіль
       router.push("/profile");
     } catch (err) {
       if (axios.isAxiosError(err)) {

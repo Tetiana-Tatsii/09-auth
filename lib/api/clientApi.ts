@@ -1,6 +1,6 @@
 import { api } from "./api";
 import { User } from "../../types/user";
-import { Note } from "../../types/note"; // Використовуємо створений нами тип Note
+import { Note } from "../../types/note";
 
 interface AuthResponse {
   user: User;
@@ -29,13 +29,11 @@ export const logout = async (): Promise<void> => {
   await api.post("/auth/logout");
 };
 
-// Явно вказуємо тип User, як просив бот
 export const checkSession = async (): Promise<User> => {
   const response = await api.get<User>("/auth/session");
   return response.data;
 };
 
-// Залишаємо тільки username
 interface UpdateProfileData {
   username: string;
 }
@@ -44,8 +42,6 @@ export const updateProfile = async (data: UpdateProfileData): Promise<User> => {
   const response = await api.patch<User>("/users/me", data);
   return response.data;
 };
-
-// --- ФУНКЦІЇ ДЛЯ НОТАТОК ---
 
 export const fetchNotes = async (
   params: {
